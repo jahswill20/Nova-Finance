@@ -233,6 +233,7 @@ const CreateAcct = () => {
       navigate('/dashboard', {replace: true}); // Redirect to dashboard after account creation
     } catch (error) {
       console.error('Error creating account: ', error);
+      setIsLoading(false);
     }
   };
   document.title = 'Create account | Nova Finance'

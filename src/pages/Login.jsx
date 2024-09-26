@@ -20,6 +20,7 @@ const Login = () => {
       navigate('/dashboard', {replace: true});
     } catch (error) {
       setError(error.message);
+      setIsLoading(false);
     }
   };
   document.title = 'Login your account | Nova finance'

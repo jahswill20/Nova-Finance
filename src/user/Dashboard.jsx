@@ -4,11 +4,12 @@ import { RiExchangeDollarFill } from 'react-icons/ri';
 import { FaHome, FaUserCircle, FaUserTie, FaWallet } from 'react-icons/fa';
 import { RiLogoutBoxRLine } from 'react-icons/ri';
 import { auth, db } from '../firebaseconfig';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc , updateDoc, collection, setDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/Nova-Logo.jpeg';
 import navbar from '../assets/menu-icon.png';
 import { signOut } from 'firebase/auth';
+import TransactionTable from '../components/TransactionTable';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -51,13 +52,13 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`fixed lg:relative top-0 left-0  h-full w-32 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform`}>
+      <div className={`fixed lg:relative bg-gray-200 top-0 left-0  h-full w-64 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform`}>
         <div className="p-6">
-          <img src={logo} alt="Logo" className="h-16 mx-auto mb-8" onClick={() => navigate('/')} />
+          <img src={logo} alt="Logo" className="h-16 mx-auto mb-8 rounded-lg shadow-md" onClick={() => navigate('/')} />
           <ul className="space-y-6">
-            <li><Link to="/Profile" className="block text-lg font-medium hover:text-blue-500">Profile</Link></li>
-            <li><Link to="/Kyc" className="block text-lg font-medium hover:text-blue-500">KYC</Link></li>
-            <li><Link to="/Withdrawal" className="block text-lg font-medium hover:text-blue-500">Withdrawal</Link></li>
+            <li><Link to="/Profile" className="block text-lg font-medium hover:text-white">Profile</Link></li>
+            <li><Link to="/Kyc" className="block text-lg font-medium hover:text-white">KYC</Link></li>
+            <li><Link to="/Withdrawal" className="block text-lg font-medium hover:text-white">Withdrawal</Link></li>
           </ul>
           <button onClick={handleLogout} className="mt-8 block w-full bg-gray-700 text-white py-2 rounded-lg hover:bg-blue-600">
             Logout
@@ -134,6 +135,7 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
+        <TransactionTable/>
       </div>
     </div>
   );

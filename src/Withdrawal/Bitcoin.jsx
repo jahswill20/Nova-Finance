@@ -90,7 +90,7 @@ const Bitcoin = () => {
               />
               <button
                 onClick={() => handleCodeSubmit({ btcAddress })}
-                className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg"
+                className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg mr-3"
               >
                 Submit
               </button>

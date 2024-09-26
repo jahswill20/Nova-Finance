@@ -100,7 +100,7 @@ const Profile = () => {
           </div>
           <div className="flex space-x-4">
             <Link to="/Kyc">
-              <button className="bg-blue-600 text-white py-2 px-4 rounded-lg">
+              <button className="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
                 KYC Upgrade
               </button>
             </Link>
