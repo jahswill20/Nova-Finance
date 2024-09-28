@@ -44,7 +44,7 @@ const Footer = () => {
       <p className='text-sm'>&copy; 2024 NovaFinance. All rights reserved.</p>
       {/* Contact Information */}
       <div className='mt-4 md:mt-0 flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6'>
-        <a href='mailto:NovaFinance@gmail.com' className='hover:underline'>Email: NovaFinance@gmail.com</a>
+        <a href='mailto:NovaFinance@gmail.com' className='hover:underline'>Email: novafinance700@gmail.com</a>
         <p>Phone: +1 (608) 814-1301</p>
       </div>
     </div>
