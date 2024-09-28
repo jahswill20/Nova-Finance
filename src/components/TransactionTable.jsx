@@ -12,14 +12,19 @@ const TransactionTable = ({ userId }) => {
         const q = query(transactionsRef, where('userId', '==', userId));
         const querySnapshot = await getDocs(q);
         const transactionsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        console.log("Fetched transactions:", transactionsData); // Debugging
         setTransactions(transactionsData);
       } catch (err) {
         console.error('Error fetching transactions: ', err);
       }
     };
-
-    fetchTransactions();
+  
+    if (userId) {
+      fetchTransactions();
+    }
   }, [userId]);
+  
 
   return (
     <div className="w-full mt-2">
