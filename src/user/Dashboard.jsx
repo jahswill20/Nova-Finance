@@ -4,17 +4,17 @@ import { RiExchangeDollarFill } from 'react-icons/ri';
 import { FaHome, FaUserCircle, FaUserTie, FaWallet } from 'react-icons/fa';
 import { RiLogoutBoxRLine } from 'react-icons/ri';
 import { auth, db } from '../firebaseconfig';
-import { doc, getDoc , updateDoc, collection, setDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, query, where, collection } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/Nova-Logo.jpeg';
 import navbar from '../assets/menu-icon.png';
 import { signOut } from 'firebase/auth';
-import TransactionTable from '../components/TransactionTable';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
+  const [transactions, setTransactions] = useState([]); // Add transaction state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +28,22 @@ const Dashboard = () => {
       }
     };
 
+    const fetchTransactions = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const transactionsRef = collection(db, 'transactionHistory');
+        const q = query(transactionsRef, where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
+        const transactionsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTransactions(transactionsData);
+      }
+    };
+
     fetchUserData();
+    fetchTransactions();
   }, []);
 
   const toggleSidebar = () => {
@@ -45,20 +60,34 @@ const Dashboard = () => {
       navigate('/signIn', { replace: true });
     });
   };
+
   const contactAdmin = () => {
     alert('Contact admin to deposit');
-  }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`fixed lg:relative bg-gray-200 top-0 left-0  h-full w-64 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform`}>
+      <div
+        className={`fixed lg:relative bg-gray-200 top-0 left-0  h-full w-64 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform`}>
         <div className="p-6">
           <img src={logo} alt="Logo" className="h-16 mx-auto mb-8 rounded-lg shadow-md" onClick={() => navigate('/')} />
           <ul className="space-y-6">
-            <li><Link to="/Profile" className="block text-lg font-medium hover:text-white">Profile</Link></li>
-            <li><Link to="/Kyc" className="block text-lg font-medium hover:text-white">KYC</Link></li>
-            <li><Link to="/Withdrawal" className="block text-lg font-medium hover:text-white">Withdrawal</Link></li>
+            <li>
+              <Link to="/Profile" className="block text-lg font-medium hover:text-white">
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link to="/Kyc" className="block text-lg font-medium hover:text-white">
+                KYC
+              </Link>
+            </li>
+            <li>
+              <Link to="/Withdrawal" className="block text-lg font-medium hover:text-white">
+                Withdrawal
+              </Link>
+            </li>
           </ul>
           <button onClick={handleLogout} className="mt-8 block w-full bg-gray-700 text-white py-2 rounded-lg hover:bg-blue-600">
             Logout
@@ -84,19 +113,18 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="mt-4 flex justify-between">
-              <div className='flex'>
-              <span className="text-2xl font-medium">{userData?.country || 'USD'}</span>
-              {showBalance ? (
-                <span className="block text-3xl font-bold ml-3">{userData?.accountBalance?.toLocaleString() || '0.00'}</span>
-              ) : (
-                <span className="block text-3xl font-bold ml-3 -mt-1 ">****</span>
-              )}
+              <div className="flex">
+                <span className="text-2xl font-medium">{userData?.country || 'USD'}</span>
+                {showBalance ? (
+                  <span className="block text-3xl font-bold ml-3">{userData?.accountBalance?.toLocaleString() || '0.00'}</span>
+                ) : (
+                  <span className="block text-3xl font-bold ml-3 -mt-1 ">****</span>
+                )}
               </div>
-              <button
-              onClick={contactAdmin}
-              className='bg-gray-700 text-white text-bold py-2 px-3 rounded-md '>+ Add money</button>
+              <button onClick={contactAdmin} className="bg-gray-700 text-white text-bold py-2 px-3 rounded-md ">
+                + Add money
+              </button>
             </div>
-            
             <p className="mt-4 text-gray-600">Account Number: {userData?.number?.slice(1) || 'N/A'}</p>
           </div>
 
@@ -118,7 +146,7 @@ const Dashboard = () => {
         </div>
 
         {/* Operations Section */}
-        <div className="bg-white p-8 rounded-lg shadow-md">
+        <div className="bg-white p-8 rounded-lg shadow-md mb-12">
           <h3 className="text-2xl font-semibold mb-6">Operations</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             {[
@@ -135,10 +163,36 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
-        <TransactionTable/>
+
+        {/* Transaction History Section */}
+        <div className="bg-white p-8 rounded-lg shadow-md">
+          <h3 className="text-2xl font-semibold mb-6">Transaction History</h3>
+          <table className="min-w-full bg-white">
+            <thead>
+              <tr className="text-left">
+                <th className="py-2 px-4 border-b">Date</th>
+                <th className="py-2 px-4 border-b">Amount</th>
+                <th className="py-2 px-4 border-b">Type</th>
+                <th className="py-2 px-4 border-b">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((transaction) => (
+                <tr key={transaction.id}>
+                  <td className="py-2 px-4 border-b">{new Date(transaction.date.seconds * 1000).toLocaleDateString()}</td>
+                  <td className="py-2 px-4 border-b">{transaction.amount}</td>
+                  <td className="py-2 px-4 border-b">{transaction.type}</td>
+                  <td className="py-2 px-4 border-b">
+                    <span className="text-green-500">Success</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;
