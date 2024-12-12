@@ -8,37 +8,31 @@ import CreateAcct from './pages/CreateAcct.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './user/Dashboard.jsx';
 import Bank from './Withdrawal/Bank.jsx';
-import Binance from './Withdrawal/Binance.jsx';
-import Bitcoin from './Withdrawal/Bitcoin.jsx';
-import Paypal from './Withdrawal/Paypal.jsx';
-import Skrill from './Withdrawal/Skrill.jsx';
 import Cards from './user/Cards.jsx';
 import Kyc from './user/kyc.jsx';
 import Profile from './user/profile.jsx';
 import AdminDashboard from './user/AdminDashboard.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import Dispute from './user/Dispute.jsx';
+import Loan from './user/Loan.jsx';
 const router = createBrowserRouter([
-  {path: '/', element: <Landingpage/>},
-  {path: '/DashBoard', element: <Dashboard/>},
-  {path: '/SignUp', element: <CreateAcct/>},
-  {path: '/SignIn', element: <Login/>},
-  {path: '/Withdrawal', element: <Bank/>},
-  {path: '/Binance', element: <Binance/>},
-  {path: '/Bitcoin', element: <Bitcoin/>},
-  {path: '/Paypal', element: <Paypal/>},
-  {path: '/Skrill', element: <Skrill/>},
-  {path: '/Cards', element: <Cards/>},
-  {path: '/Kyc', element: <Kyc/>},
-  {path: '/Profile', element: <Profile/>},
-  {path: '/admin', element: <AdminDashboard/>},
-  {path: '/AboutUs', element: <AboutUs/>},
-  {path: '/dispute', element: <Dispute/>}
+  { path: '/', element: <Landingpage /> },
+  { path: '/DashBoard', element: <Dashboard /> },
+  { path: '/SignUp', element: <CreateAcct /> },
+  { path: '/SignIn', element: <Login /> },
+  { path: '/Withdrawal', element: <Bank /> },
+  { path: '/Cards', element: <Cards /> },
+  { path: '/Kyc', element: <Kyc /> },
+  { path: '/Profile', element: <Profile /> },
+  { path: '/admin', element: <AdminDashboard /> },
+  { path: '/AboutUs', element: <AboutUs /> },
+  { path: '/dispute', element: <Dispute /> },
+  { path: '/loan', element: <Loan /> }
 ])
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )

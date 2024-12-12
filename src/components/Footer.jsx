@@ -4,9 +4,9 @@ const Footer = () => {
   return (
     <div>
        <footer className='bg-gray-900 text-white py-8'>
-  <div className='px-4 md:px-16'>
-    {/* Upper Section */}
-    <div className='flex flex-col md:flex-row justify-between items-start md:items-center'>
+     <div className='px-4 md:px-16'>
+      {/* Upper Section */}
+      <div className='flex flex-col md:flex-row justify-between items-start md:items-center'>
       {/* Company Information */}
       <div className='mb-6 md:mb-0'>
         <h2 className='text-2xl font-semibold'>NovaFinance</h2>
