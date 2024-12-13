@@ -72,9 +72,7 @@ const Dashboard = () => {
           <h3 className="text-xl font-semibold text-gray-800 flex items-center">
             <FaWallet className="mr-2 text-3xl text-[#4E3629]" /> Available Balance
           </h3>
-          <button onClick={toggleBalanceVisibility}>
-            {showBalance ? <FaEyeSlash /> : <FaEye />}
-          </button>
+
         </div>
         <div className='flex justify-between'>
           <div className="mt-4">

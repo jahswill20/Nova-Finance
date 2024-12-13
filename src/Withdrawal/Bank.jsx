@@ -35,15 +35,16 @@ const Bank = () => {
   }, []);
   // userData.accountLevel <= 1
   // setShowUpgradePopup(true);
+
   const handleWithdraw = () => {
-    if (parseFloat(amount) <= userData.accountBalance) {
+    if (userData.accountLevel <= 1) {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-        setShowCodePopup(true);
+        setShowUpgradePopup(true);
       }, 2000);
-    } else if (userData.accountLevel <= 1) {
-      setShowUpgradePopup(true);
+    } else if (parseFloat(amount) <= userData.accountBalance) {
+      setShowCodePopup(true);
     } else {
       alert('Transfer pending, kindly contact admin.');
     }
