@@ -14,6 +14,7 @@ const AdminDashboard = () => {
   const [accountLevel, setAccountLevel] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -73,7 +74,9 @@ const AdminDashboard = () => {
       setError('An error occurred while sending the loan.');
     }
   };
-
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   // Handle Send Money Logic
   const handleSendMoney = async () => {
     try {
@@ -169,6 +172,15 @@ const AdminDashboard = () => {
       {/* Total Users Section */}
       <div className="bg-white p-4 mb-6 rounded-lg shadow-lg text-center">
         <h2 className="text-lg font-bold">Total Users: {users.length}</h2>
+      </div>
+      <div className="mb-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full border p-2 rounded-lg"
+          placeholder="Search by username"
+        />
       </div>
 
       {/* Users Table */}
