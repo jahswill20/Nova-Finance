@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebaseconfig';
-import { doc, getDoc, addDoc, collection } from 'firebase/firestore';
+import { doc, getDoc, addDoc, collection, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Dialog } from '@headlessui/react';
 import Sidenav from '../components/Sidenav';
 
@@ -52,11 +52,32 @@ const Bank = () => {
 
   const handleCodeSubmit = async () => {
     const user = auth.currentUser;
-
+    const userDocRef = doc(db, 'users', user.uid);
+    const withdrawalAmount = parseFloat(amount);
     if (user) {
       // Log the values to check if they are what you expect
       console.log('User Data VAT:', userData.vatCode);
       console.log('Input Code:', code);
+
+      // Update user's account balance
+      await updateDoc(userDocRef, {
+        accountBalance: userData.accountBalance - withdrawalAmount
+      });
+
+      // Add withdrawal transaction to user's transactions
+      await addDoc(collection(db, 'transactions'), {
+        type: 'withdrawal',
+        method: paymentMethod,
+        accountNumber: accountNumber || '',
+        accountHolderName: accountHolderName || '',
+        bankName: bankName || '',
+        email: email || '',
+        cryptoType: cryptoType || '',
+        amount: withdrawalAmount,
+        date: serverTimestamp(),
+        status: 'pending',
+        userId: user.uid,
+      });
 
       // Add withdrawal details to the database
       await addDoc(collection(db, 'withdrawals'), {
@@ -73,7 +94,8 @@ const Bank = () => {
 
       // Check if VAT code matches
       if (String(userData.vatCode) === String(code)) {
-        setShowUpgradePopup(true);
+        alert("Transfer pending")
+        setShowCodePopup(false);
       } else {
         alert('Wrong VAT code. Please try again.');
       }

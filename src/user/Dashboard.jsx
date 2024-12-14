@@ -9,7 +9,7 @@ import { getDoc, doc, collection, getDocs, query, where } from 'firebase/firesto
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [showBalance, setShowBalance] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {

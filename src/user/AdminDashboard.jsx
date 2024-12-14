@@ -173,15 +173,6 @@ const AdminDashboard = () => {
       <div className="bg-white p-4 mb-6 rounded-lg shadow-lg text-center">
         <h2 className="text-lg font-bold">Total Users: {users.length}</h2>
       </div>
-      <div className="mb-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full border p-2 rounded-lg"
-          placeholder="Search by username"
-        />
-      </div>
 
       {/* Users Table */}
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
