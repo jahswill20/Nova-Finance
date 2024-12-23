@@ -229,7 +229,7 @@ const AdminDashboard = () => {
           className="fixed z-10 inset-0 overflow-y-auto"
         >
           <div className="flex items-center justify-center min-h-screen">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-80 md:w-1/3">
               <h2 className="text-lg font-bold mb-4">Actions for {selectedUser.username}</h2>
 
               {/* Send Money Section */}
@@ -299,6 +299,11 @@ const AdminDashboard = () => {
                   <FaLevelUpAlt className="inline-block mr-2" />
                   Upgrade Level
                 </button>
+                <h2 className='font-bold'
+                  onClick={() => {
+                    setShowActionPopup(false);
+                  }}
+                >Cancel here..</h2>
               </div>
             </div>
           </div>
