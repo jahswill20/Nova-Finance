@@ -299,7 +299,7 @@ const AdminDashboard = () => {
                   <FaLevelUpAlt className="inline-block mr-2" />
                   Upgrade Level
                 </button>
-                <h2 className='font-bold'
+                <h2 className='font-bold mt-6 text-red-500'
                   onClick={() => {
                     setShowActionPopup(false);
                   }}
