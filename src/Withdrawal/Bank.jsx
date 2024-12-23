@@ -1,162 +1,86 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebaseconfig';
-import {
-  doc,
-  getDoc,
-  addDoc,
-  collection,
-  updateDoc,
-  serverTimestamp,
-  onSnapshot
-} from 'firebase/firestore';
+import { doc, getDoc, addDoc, collection, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Dialog } from '@headlessui/react';
 import Sidenav from '../components/Sidenav';
-import { useNavigate } from 'react-router-dom';
 
 const Bank = () => {
-  const navigate = useNavigate();
-
-  // State Management
   const [userData, setUserData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Payment Method States
-  const [paymentMethod, setPaymentMethod] = useState('Bank');
+  const [paymentMethod, setPaymentMethod] = useState('Bank'); // Default method set to Bank
   const [accountNumber, setAccountNumber] = useState('');
   const [accountHolderName, setAccountHolderName] = useState('');
   const [bankName, setBankName] = useState('');
   const [email, setEmail] = useState('');
   const [cryptoAddress, setCryptoAddress] = useState('');
-  const [cryptoType, setCryptoType] = useState('BTC');
-
-  // Transaction States
+  const [cryptoType, setCryptoType] = useState('BTC'); // Default cryptocurrency type
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
-
-  // Popup States
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
   const [showCodePopup, setShowCodePopup] = useState(false);
   const [showAdminPopup, setShowAdminPopup] = useState(false);
   const [code, setCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Continuous User Data Fetching
   useEffect(() => {
-    const fetchAndListenToUserData = () => {
+    const fetchUserData = async () => {
       const user = auth.currentUser;
-
-      if (!user) {
-        setIsLoading(false);
-        navigate('/login'); // Redirect if no user
-        return;
-      }
-
-      // Real-time listener for user document
-      const userDocRef = doc(db, 'users', user.uid);
-      const unsubscribe = onSnapshot(
-        userDocRef,
-        (doc) => {
-          if (doc.exists()) {
-            const userData = doc.data();
-            setUserData(userData);
-            setIsLoading(false);
+      setIsLoading(true); // Set loading to true at the start of fetch
+      try {
+        if (user) {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
           } else {
-            setUserData(null);
-            setIsLoading(false);
-            navigate('/login');
+            // Handle case where user document doesn't exist
+            console.error('No user document found');
           }
-        },
-        (error) => {
-          console.error("Error fetching user data:", error);
-          setIsLoading(false);
-          navigate('/login');
+        } else {
+          // Handle case where no user is logged in
+          console.error('No user logged in');
         }
-      );
-
-      // Cleanup subscription on component unmount
-      return () => unsubscribe();
-    };
-
-    // Initial fetch and set up real-time listener
-    fetchAndListenToUserData();
-
-    // Add listener for auth state changes
-    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      if (user) {
-        fetchAndListenToUserData();
-      } else {
-        setUserData(null);
+      } catch (error) {
+        // Handle any errors during fetching
+        console.error('Error fetching user data:', error);
+      } finally {
+        // Always set loading to false, whether successful or not
         setIsLoading(false);
-        navigate('/profile');
       }
-    });
-
-    // Cleanup both listeners
-    return () => {
-      unsubscribeAuth();
     };
-  }, [navigate]);
-  const handleSetCode = () => {
-    // Close the code popup
-    setShowCodePopup(false);
 
-    // Open the admin popup to inform about setting the VAT code
-    setShowAdminPopup(true);
-  };
+    fetchUserData();
+  }, []);
+  // userData.accountLevel <= 1
+  // setShowUpgradePopup(true);
 
-  // Withdrawal Handler
   const handleWithdraw = () => {
-    if (isLoading) return;
-
-    if (!userData) {
-      alert('User data not available');
-      return;
-    }
-
-    // Account Level Check
     if (userData.accountLevel <= 1) {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
         setShowUpgradePopup(true);
       }, 2000);
-      return;
-    }
-
-    // Amount Validation
-    const withdrawAmount = parseFloat(amount);
-    if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
-      alert('Please enter a valid amount');
-      return;
-    }
-
-    if (withdrawAmount <= userData.accountBalance) {
+    } else if (parseFloat(amount) <= userData.accountBalance) {
       setShowCodePopup(true);
     } else {
-      alert('Insufficient balance. Transfer pending, kindly contact admin.');
+      alert('Transfer pending, kindly contact admin.');
     }
   };
 
-  // Code Submission Handler
   const handleCodeSubmit = async () => {
     const user = auth.currentUser;
-    if (!user) return;
+    const userDocRef = doc(db, 'users', user.uid);
+    const withdrawalAmount = parseFloat(amount);
+    if (user) {
+      // Log the values to check if they are what you expect
+      console.log('User Data VAT:', userData.vatCode);
+      console.log('Input Code:', code);
 
-    try {
-      // VAT Code Verification
-      if (String(userData.vatCode) !== String(code)) {
-        alert('Incorrect VAT code. Please try again.');
-        return;
-      }
-
-      const userDocRef = doc(db, 'users', user.uid);
-      const withdrawalAmount = parseFloat(amount);
-
-      // Update Account Balance
+      // Update user's account balance
       await updateDoc(userDocRef, {
         accountBalance: userData.accountBalance - withdrawalAmount
       });
 
-      // Create Withdrawal Transaction
+      // Add withdrawal transaction to user's transactions
       await addDoc(collection(db, 'transactions'), {
         type: 'withdrawal',
         method: paymentMethod,
@@ -171,7 +95,7 @@ const Bank = () => {
         userId: user.uid,
       });
 
-      // Detailed Withdrawal Record
+      // Add withdrawal details to the database
       await addDoc(collection(db, 'withdrawals'), {
         uid: user.uid,
         accountNumber,
@@ -180,41 +104,33 @@ const Bank = () => {
         email,
         cryptoAddress,
         cryptoType,
-        amount: withdrawalAmount,
+        amount: parseFloat(amount),
         timestamp: new Date(),
       });
 
-      alert('Withdrawal request submitted successfully');
-      setShowCodePopup(false);
+      // Check if VAT code matches
+      if (String(userData.vatCode) === String(code)) {
+        alert("Transfer pending")
+        setShowCodePopup(false);
+      } else {
+        alert('Wrong VAT code. Please try again.');
+      }
 
-      // Reset form
-      setAmount('');
-      setCode('');
-    } catch (error) {
-      console.error('Withdrawal Error:', error);
-      alert('An error occurred. Please try again.');
     }
   };
 
-  // Loading State Render
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#cc6f3d]"></div>
-      </div>
-    );
+      </div>);
   }
 
-  // No User Data Render
-  if (!userData) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p>No user data found. Please log in again.</p>
-      </div>
-    );
-  }
+  const handleSetCode = () => {
+    setShowCodePopup(false);
+    setShowAdminPopup(true);
+  };
 
-  // Main Component Render
   return (
     <div className="container mx-auto p-4 text-gray-900 font-sans">
       <Sidenav />
