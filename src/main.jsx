@@ -15,6 +15,7 @@ import AdminDashboard from './user/AdminDashboard.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import Dispute from './user/Dispute.jsx';
 import Loan from './user/Loan.jsx';
+import UserDetails from './Admin/UserDetails.jsx';
 const router = createBrowserRouter([
   { path: '/', element: <Landingpage /> },
   { path: '/DashBoard', element: <Dashboard /> },
@@ -27,7 +28,9 @@ const router = createBrowserRouter([
   { path: '/admin', element: <AdminDashboard /> },
   { path: '/AboutUs', element: <AboutUs /> },
   { path: '/dispute', element: <Dispute /> },
-  { path: '/loan', element: <Loan /> }
+  { path: '/loan', element: <Loan /> },
+  { path: '/admin/:userId', element: <UserDetails /> }
+
 ])
 
 
