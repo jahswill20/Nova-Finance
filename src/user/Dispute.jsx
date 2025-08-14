@@ -5,9 +5,10 @@ import { collection, addDoc } from 'firebase/firestore';
 const Dispute = () => {
   const [amount, setAmount] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
+  const [problemType, setProblemType] = useState(''); // New state for problem type
+  const [description, setDescription] = useState(''); // New state for description
   const [referenceNumber, setReferenceNumber] = useState('');
   const [message, setMessage] = useState('');
-
 
   const generateReferenceNumber = () => {
     return `REF-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
@@ -24,6 +25,8 @@ const Dispute = () => {
       await addDoc(collection(db, 'disputes'), {
         amount,
         accountNumber,
+        problemType, // Store the problem type in Firestore
+        description, // Store the description in Firestore
         referenceNumber: refNumber,
         status: 'pending',
         createdAt: new Date(),
@@ -34,6 +37,8 @@ const Dispute = () => {
       // Clear form fields
       setAmount('');
       setAccountNumber('');
+      setProblemType('');
+      setDescription('');
     } catch (error) {
       console.error('Error submitting dispute:', error);
       setMessage('There was an error submitting your dispute. Please try again.');
@@ -67,9 +72,35 @@ const Dispute = () => {
               required
             />
           </div>
+          <div className="mb-4">
+            <label htmlFor="problemType" className="block text-gray-700">Problem Type</label>
+            <select
+              id="problemType"
+              value={problemType}
+              onChange={(e) => setProblemType(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:shadow-outline"
+              required
+            >
+              <option value="">Select a problem type</option>
+              <option value="withdrawal_not_working">Withdrawal Not Working</option>
+              <option value="deposit_not_working">Deposit Not Working</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="description" className="block text-gray-700">Description</label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:shadow-outline"
+              rows="4"
+              required
+            />
+          </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full mt-4"
+            className="bg-green-500 text-white py-2 px-4 rounded-lg w-full mt-4"
           >
             Submit Dispute
           </button>
@@ -80,7 +111,7 @@ const Dispute = () => {
             <div className="mt-2">
               <button
                 onClick={() => navigator.clipboard.writeText(referenceNumber)}
-                className="text-blue-500 underline"
+                className="text-green-500 underline"
               >
                 Copy Reference Number
               </button>
