@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <div>
@@ -41,7 +41,9 @@ const Footer = () => {
 
           {/* Lower Section */}
           <div className='flex flex-col md:flex-row justify-between items-center'>
-            <p className='text-sm'>&copy; 2024 NovaFinance. All rights reserved.</p>
+            <Link to='/admin'>
+              <p className='text-sm'>&copy; 2024 NovaFinance. All rights reserved.</p>
+            </Link>
             {/* Contact Information */}
             <div className='mt-4 md:mt-0 flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6'>
               <a href='mailto:NovaFinance@gmail.com' className='hover:underline'>Email: novafinance700@gmail.com</a>
