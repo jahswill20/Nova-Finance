@@ -7,7 +7,7 @@ const Dispute = () => {
   const [accountNumber, setAccountNumber] = useState('');
   const [referenceNumber, setReferenceNumber] = useState('');
   const [message, setMessage] = useState('');
-  const apikey = "70d052c24ec1b9498f436d577fcd8386-24bda9c7-21810fe0";
+
 
   const generateReferenceNumber = () => {
     return `REF-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
